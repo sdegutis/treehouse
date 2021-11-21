@@ -27,7 +27,7 @@ function love.draw()
   -- love.graphics.rectangle('line',10,10,200,35)
   -- widgetRes.getOrMakeSpriteAt(1):draw(  20*3, 10, 4)
 
-  local spacer="\n"
+  local spacer="\n\n"
 
   love.graphics.setColor(1,1,0)
   love.graphics.print("hello world!"..spacer..
