@@ -1,3 +1,6 @@
+-- Version 1.0
+
+
 ---@param r number
 ---@param g number
 ---@param b number
@@ -6,6 +9,7 @@ local function makecolor(r,g,b,a)
 end
 
 local colorTable = {
+  [0]=
   makecolor(0x00,0x00,0x00,0),
   makecolor(0x1D,0x2B,0x53),
   makecolor(0x7E,0x25,0x53),
@@ -51,7 +55,71 @@ function Sprite:draw(x, y, scale)
   love.graphics.draw(self.image, x, y, 0, scale, scale)
 end
 
----@param spritesheet string[]
+--- @param gfx string[] 0-128 lines of 128 char strings
+--- @return number[][] spritesheet `colorIndexes[y=0-127][x=0-127]`
+local function parseSpritesheet(gfx)
+  local ss = {}
+
+  for y = 0, 127 do
+    local row = {}
+    table.insert(ss, y, row)
+
+    local chars = gfx[y+1] or string.rep('0', 128)
+
+    for x = 0, 127 do
+      local idx = x + 1
+      local hex = chars:sub(idx,idx)
+      local colorIndex = tonumber(hex, 16)
+      table.insert(row, x, colorIndex)
+    end
+  end
+
+  return ss
+end
+
+---@param spritesheet number[][]
+---@param chars string
+local function newFontFromSpritesheet(spritesheet, chars)
+  local needsUpper = not chars:match("%u")
+
+  local howManyExtra = 0
+  if needsUpper then
+    chars = chars:gsub("%l", function(s)
+      howManyExtra = howManyExtra + 1
+      return s .. s:upper()
+    end)
+  end
+
+  local imgdata = love.image.newImageData((8*16+howManyExtra)*8, 8)
+
+  local i = 0
+  local function addGlyph(cx, cy)
+    -- Loop through sprite
+    for y=0,7 do
+      local row = spritesheet[cy*8+y]
+      for x=0,7 do
+        local colorIndex = row[cx*8+x]
+        imgdata:setPixel(i*8+x, y, colorTable[colorIndex])
+      end
+    end
+    i=i+1
+  end
+
+  -- Loop through spritesheet
+  for cy=0,7 do
+    for cx=0,15 do
+      addGlyph(cx, cy)
+
+      if needsUpper and chars:sub(i,i):match("%l") then
+        addGlyph(cx, cy)
+      end
+    end
+  end
+
+  return love.graphics.newImageFont(imgdata, chars)
+end
+
+---@param spritesheet number[][]
 ---@param sx number
 ---@param sy number
 ---@param w number
@@ -61,16 +129,13 @@ local function newImageFromSpritesheet(spritesheet, sx, sy, w, h)
   local data = love.image.newImageData(w,h)
 
   for py = 0, (h-1) do
-    local row = sy * 8 + py + 1
-    local line = spritesheet[row] or string.rep('0', 128)
+    local rowIndex = sy * 8 + py
+    local row = spritesheet[rowIndex]
 
     for px = 0, (w-1) do
-      local idx = sx * 8 + px + 1
-      local hex = line:sub(idx,idx)
-      local n = tonumber(hex, 16)
-      local color = colorTable[n+1]
-
-      data:setPixel(px, py, color)
+      local idx = sx * 8 + px
+      local colorIndex = row[idx]
+      data:setPixel(px, py, colorTable[colorIndex])
     end
   end
 
@@ -165,8 +230,11 @@ local function parseFlags(gff)
   return flags
 end
 
----@param lines any
-local function parseLines(lines)
+---@param filenameOrContents string
+return function(filenameOrContents)
+  local lines = filenameOrContents:match('^pico-8 cartridge')
+                  and filenameOrContents:gmatch("(.-)\n")
+                  or  love.filesystem.lines(filenameOrContents)
   local groups = parseGroups(lines)
 
   ---2d array of map sprite indexes: `map[y][x]` (0-indexed like PICO-8)
@@ -174,6 +242,8 @@ local function parseLines(lines)
 
   ---Array of flags: `flags[i]` (0-indexed like PICO-8)
   local flags = parseFlags(groups.__gff__ or {})
+
+  local spritesheet = parseSpritesheet(groups.__gfx__ or {})
 
   ---Returns a new love.Image for this sprite
   ---@param i number (0-indexed like PICO-8)
@@ -183,7 +253,7 @@ local function parseLines(lines)
   local function makeSpriteAt(i, w, h)
     local sx = i % 16
     local sy = math.floor(i / 16)
-    local img = newImageFromSpritesheet(groups.__gfx__ or {}, sx, sy, w or 8, h or 8)
+    local img = newImageFromSpritesheet(spritesheet, sx, sy, w or 8, h or 8)
     return Sprite.new(img, flags[i])
   end
 
@@ -201,32 +271,18 @@ local function parseLines(lines)
     return cachedSprites[i]
   end
 
+  ---Returns new font
+  ---@param chars string[] | nil omit this to use chars in Lua code
+  ---@return love.Font
+  local function createFont(chars)
+    return newFontFromSpritesheet(spritesheet, chars or table.concat(groups.__lua__))
+  end
+
   return {
     makeSpriteAt = makeSpriteAt,
     getOrMakeSpriteAt = getOrMakeSpriteAt,
     map = map,
     flags = flags,
+    createFont = createFont,
   }
 end
-
----@param str string
-local function lines(str)
-  return str:gmatch("(.-)\n")
-end
-
----Returns p8 data
----@param contents string contents of p8 file
-local function parseString(contents)
-  return parseLines(lines(contents))
-end
-
----Returns p8 data
----@param filename string relative path
-local function parseFile(filename)
-  return parseLines(love.filesystem.lines(filename))
-end
-
-return {
-  parseFile=parseFile,
-  parseString=parseString,
-}
