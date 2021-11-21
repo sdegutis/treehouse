@@ -31,8 +31,8 @@ function love.draw()
 
   love.graphics.setColor(1,1,0)
   love.graphics.print("hello world!"..spacer..
-                      "a+b=c^2 \\ 3 || false"..spacer..
-                      "a = (c<3)"..spacer..
+                      "a=b+c^2 \\ 3 || false"..spacer..
+                      "a:(c<3)"..spacer..
                       "[char]"..spacer..
                       "@char"..spacer..
                       "$50 for gold"..spacer..
