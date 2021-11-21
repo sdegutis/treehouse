@@ -29,7 +29,7 @@ function Button.new(p8, x, y, scale, spr, text)
 end
 
 function Button:draw()
-  local sprites = self.spritesUp
+  local sprites = love.mouse.isDown(1) and self.spritesDown or self.spritesUp
   local x = self.x
   local y = self.y
   local scale = self.scale
@@ -48,7 +48,8 @@ function Button:draw()
   sprites.right:draw(x+(eachSprPixels*(numSprs-1.5)),y,scale)
 
   love.graphics.setColor(0,0,0)
-  love.graphics.print(text, x+(2*scale),y+(2*scale),0,scale,scale)
+  local offset = love.mouse.isDown(1) and scale or 0
+  love.graphics.print(text, x+(2*scale)+offset,y+(2*scale)+offset,0,scale,scale)
 end
 
 function Button:update()
@@ -60,7 +61,7 @@ end
 local widgetRes = loadP8('res/widgets.p8')
 
 local b1 = Button.new(widgetRes, 10,10, 5, 0, "Testing this!")
-local b2 = Button.new(widgetRes, 130,150, 3, 0, "yep")
+local b2 = Button.new(widgetRes, 130,150, 3, 0, "$125")
 
 function love.draw()
   love.graphics.clear(0,0.15,0)
