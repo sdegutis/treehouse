@@ -7,8 +7,8 @@ return {
 
   setWindowSize = function(w,h)
     local winw, winh = love.window.getMode()
-    if winw ~= 800 or winh ~= 600 then
-      love.window.setMode(800, 600)
+    if winw ~= w or winh ~= h then
+      love.window.setMode(w, h)
     end
   end,
 

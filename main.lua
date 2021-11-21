@@ -1,6 +1,6 @@
 require('lib.util').enableDebug()
 require('lib.util').fixScaleBlur()
-require('lib.util').setWindowSize(800, 600)
+require('lib.util').setWindowSize(800, 800)
 
 -- local enet = require('enet')
 local loadP8 = require('lib.pico8')
@@ -27,22 +27,27 @@ function love.draw()
   -- love.graphics.rectangle('line',10,10,200,35)
   -- widgetRes.getOrMakeSpriteAt(1):draw(  20*3, 10, 4)
 
+  local spacer="\n"
+
   love.graphics.setColor(1,1,0)
-  love.graphics.print("hello world!\n\n"..
-                      "a+b=c\n\n"..
-                      "a = (c<3)\n\n"..
-                      "[char]\n\n"..
-                      "(what?)\n\n"..
-                      "Zebras!!!\n\n"..
-                      "\"Sphinx of black quartz, judge my vow\"\n\n"..
-                      " -- that's used by Adobe InDesign (lol wut)\n\n"..
-                      "\"Pack my box with five dozen liquor jars\"\n\n"..
-                      " -- that one's supposedly used by NASA\n\n"..
-                      "<one more_thing_left>\n\n"..
-                      "You know; it's great!\n\n"..
-                      "Or isn't it?\n\n"..
-                      "Yes, it is.\n\n"..
-                      "Oh, \"you know\" isn't enough!\n\n"..
-                      "12 + 34 / 56 - 78 * 90 = 30%\n\n"..
+  love.graphics.print("hello world!"..spacer..
+                      "a+b=c^2 \\ 3 || false"..spacer..
+                      "a = (c<3)"..spacer..
+                      "[char]"..spacer..
+                      "@char"..spacer..
+                      "$50 for gold"..spacer..
+                      "#char"..spacer..
+                      "(and what?)"..spacer..
+                      "Zebras!!!"..spacer..
+                      "\"Sphinx of black quartz, judge my vow\""..spacer..
+                      " -- that's used by Adobe InDesign (lol wut)"..spacer..
+                      "\"Pack my box with five dozen liquor jars\""..spacer..
+                      " -- that one's supposedly used by NASA"..spacer..
+                      "<one more_thing_left>"..spacer..
+                      "You know; it's great!"..spacer..
+                      "Or isn't it?"..spacer..
+                      "Yes, it is."..spacer..
+                      "Oh, \"you know\" isn't enough!"..spacer..
+                      "12 + 34 / 56 - 78 * 90 = 30%"..spacer..
                       "", 14,14,0,4,4)
 end
