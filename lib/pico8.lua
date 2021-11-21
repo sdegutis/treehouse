@@ -90,12 +90,29 @@ local function newFontFromSpritesheet(spritesheet, chars)
     end)
   end
 
-  local imgdata = love.image.newImageData((8*16+howManyExtra)*8, 8)
+  -- Look at spr(0) to figure out how tall each glyph is
+  
+  local h = 8
+  for y=0,7 do
+    local allSame = true
+    for x=1,7 do
+      if spritesheet[y][x] ~= spritesheet[y][0] then
+        allSame=false
+        break
+      end
+    end
+    if allSame then
+      h=y
+      break
+    end
+  end
+
+  local imgdata = love.image.newImageData((8*16+howManyExtra)*8, h)
 
   local i = 0
   local function addGlyph(cx, cy)
     -- Loop through sprite
-    for y=0,7 do
+    for y=0,h-1 do
       local row = spritesheet[cy*8+y]
       for x=0,7 do
         local colorIndex = row[cx*8+x]
