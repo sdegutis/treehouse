@@ -30,11 +30,19 @@ function love.draw()
   love.graphics.setColor(1,1,0)
   love.graphics.print("hello world!\n\n"..
                       "a+b=c\n\n"..
+                      "a = (c<3)\n\n"..
                       "[char]\n\n"..
                       "(what?)\n\n"..
+                      "Zebras!!!\n\n"..
+                      "\"Sphinx of black quartz, judge my vow\"\n\n"..
+                      " -- that's used by Adobe InDesign (lol wut)\n\n"..
+                      "\"Pack my box with five dozen liquor jars\"\n\n"..
+                      " -- that one's supposedly used by NASA\n\n"..
+                      "<one more_thing_left>\n\n"..
                       "You know; it's great!\n\n"..
-                      "Or is it?\n\n"..
+                      "Or isn't it?\n\n"..
                       "Yes, it is.\n\n"..
+                      "Oh, \"you know\" isn't enough!\n\n"..
                       "12 + 34 / 56 - 78 * 90 = 30%\n\n"..
                       "", 14,14,0,4,4)
 end
