@@ -1,35 +1,38 @@
 require('lib.util').enableDebug()
 require('lib.util').fixScaleBlur()
-require('lib.util').setWindowSize(800, 800)
+require('lib.util').setWindowSize(800, 600)
 
 -- local enet = require('enet')
 local loadP8 = require('lib.pico8')
 
 local widgetRes = loadP8('res/widgets.p8')
 local font = loadP8('res/font.p8').createFont()
+love.graphics.setFont(font)
 
-function love.load()
-  love.graphics.setFont(font)
-end
+local function drawButton(x,y,scale,spr,text)
+  local left = widgetRes.getOrMakeSpriteAt(spr+0)
+  local mid = widgetRes.getOrMakeSpriteAt(spr+1)
+  local right = widgetRes.getOrMakeSpriteAt(spr+2)
 
-function love.draw()
-end
+  left:draw(x,y,scale)
+  mid:draw(x+(8*scale),y,scale)
+  right:draw(x+(16*scale),y,scale)
 
-function love.update()
-  -- local mx, my = love.mouse.getPosition()
+  love.graphics.setColor(1,1,1)
+  love.graphics.print(text, x+(2*scale),y+(2*scale),0,scale,scale)
 end
 
 function love.draw()
   love.graphics.clear()
-  -- love.graphics.setColor(0,0.5,0.5)
-  -- love.graphics.rectangle('fill',10,10,200,35)
-  -- love.graphics.setColor(0,1,1)
-  -- love.graphics.rectangle('line',10,10,200,35)
-  -- widgetRes.getOrMakeSpriteAt(1):draw(  20*3, 10, 4)
 
+  local mx, my = love.mouse.getPosition()
+  drawButton(mx-10, my-50, 5, 0, "testing")
+
+  -- TestFont()
+end
+
+function TestFont()
   local spacer="\n\n"
-
-  love.graphics.setColor(1,1,0)
   love.graphics.print("hello world!"..spacer..
                       "a=b+c^2 \\ 3 || false"..spacer..
                       "a:(c<3)"..spacer..
